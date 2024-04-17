@@ -1,0 +1,54 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    background: white;
+    width: 500px;
+    height: 550px;
+    border-radius: 50px;
+}
+
+.nameBox,
+.passwordBox {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 90px;
+    width: 370px;
+}
+
+.error-name-msg,
+.error-password-msg {
+    color: red;
+    height: 10px;
+}
+
+.name-input,
+.password-input {
+    height: 25px;
+}
+
+.login-button,
+.login-button:disabled:hover {
+    font-size: 26px;
+    padding: 7px;
+    background-color: #75367c;
+    border: 1px solid #e298a8;
+    color: #e298a8;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.login-button:disabled,
+.login-button:disabled:hover {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.login-button:hover {
+    background-color: #e298a8;
+    border: 1px solid #75367c;
+    color: #75367c;
+}
