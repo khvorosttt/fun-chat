@@ -1,21 +1,23 @@
-import { CallbackErrorInfo, CallbackInfo, RequestInfo, ResponseInfo, ResponseType } from './types';
+import { CallbackErrorInfo, CallbackInfo, CallbackUsersInfo, RequestInfo, ResponseInfo, ResponseType } from './types';
 
 export default class WebSocketApi {
-    ws: WebSocket = new WebSocket('ws://localhost:4000');
+    ws: WebSocket;
 
     loginErrorCallback: CallbackErrorInfo | null;
 
     loginCallback: CallbackInfo | null;
 
+    showUserCallback: CallbackUsersInfo | null;
+
     constructor() {
+        this.ws = new WebSocket('ws://127.0.0.1:4000');
         this.loginErrorCallback = null;
         this.loginCallback = null;
+        this.showUserCallback = null;
         this.connectionToServer();
     }
 
     connectionToServer() {
-        this.ws = new WebSocket('ws://localhost:4000');
-
         this.ws.onopen = () => {
             console.log('Connection to server established');
         };
@@ -34,6 +36,12 @@ export default class WebSocketApi {
             case ResponseType.LOGIN:
                 this.loginCallback?.callback();
                 break;
+            case ResponseType.USER_ACTIVE:
+                this.showUserCallback?.callback(response.payload.users);
+                break;
+            case ResponseType.USER_INACTIVE:
+                this.showUserCallback?.callback(response.payload.users);
+                break;
             default:
                 break;
         }
@@ -44,7 +52,22 @@ export default class WebSocketApi {
     }
 
     sendMessageToServer(msg: RequestInfo) {
-        this.ws.send(JSON.stringify(msg));
+        this.waitingForConnection(
+            {
+                callback: () => {
+                    this.ws.send(JSON.stringify(msg));
+                },
+            },
+            1000
+        );
+    }
+
+    waitingForConnection(callback: CallbackInfo, resendInterval: number) {
+        if (this.ws.readyState === this.ws.OPEN) {
+            callback.callback();
+        } else {
+            setTimeout(() => this.waitingForConnection(callback, resendInterval), resendInterval);
+        }
     }
 
     setLoginErrorCallback(callback: CallbackErrorInfo) {
@@ -53,5 +76,9 @@ export default class WebSocketApi {
 
     setLoginCallback(callback: CallbackInfo) {
         this.loginCallback = callback;
+    }
+
+    setShowUserCallback(callback: CallbackUsersInfo) {
+        this.showUserCallback = callback;
     }
 }

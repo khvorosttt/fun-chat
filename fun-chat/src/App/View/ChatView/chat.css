@@ -1,0 +1,47 @@
+.chat-container {
+    height: 80vh;
+    width: 70vw;
+    background-color: rgb(98%, 76%, 83%, 0.8);
+    border-radius: 15px;
+    display: flex;
+}
+
+.users-container {
+    width: 40%;
+    border-right: 2px solid green;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dialog-container {
+    width: 60%;
+}
+
+.search-user-input {
+    width: 90%;
+    height: 30px;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.users-list-wrapper {
+    overflow-y: scroll;
+    width: 90%;
+    height: 90%;
+}
+
+.user-li-wrapper {
+    height: 20px;
+    padding: 10px;
+    font-size: 20px;
+    border-bottom: 1px solid green;
+    position: relative;
+}
+
+.active-user::after {
+    content: '🟢';
+    position: absolute;
+    scale: 0.5;
+    margin-left: 5px;
+}

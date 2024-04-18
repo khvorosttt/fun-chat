@@ -1,6 +1,6 @@
 import Component from '../../utils/base-component';
 import View from '../View';
-// import './footer.css';
+import './footer.css';
 
 export default class FooterView extends View {
     constructor() {
