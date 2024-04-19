@@ -4,11 +4,13 @@
     background-color: rgb(98%, 76%, 83%, 0.8);
     border-radius: 15px;
     display: flex;
+    border: 1px solid #87bc6c;
 }
 
 .users-container {
+    padding: 10px;
     width: 40%;
-    border-right: 2px solid green;
+    border-right: 2px solid #87bc6c;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,10 +25,11 @@
     height: 30px;
     margin: 5px;
     border-radius: 5px;
+    background-color: #e4f3ec;
 }
 
 .users-list-wrapper {
-    overflow-y: scroll;
+    overflow-y: auto;
     width: 90%;
     height: 90%;
 }
@@ -35,13 +38,63 @@
     height: 20px;
     padding: 10px;
     font-size: 20px;
-    border-bottom: 1px solid green;
+    border-bottom: 1px solid #87bc6c;
     position: relative;
+    cursor: pointer;
+    padding-left: 30px;
 }
 
-.active-user::after {
-    content: '🟢';
+.active-user::before {
+    content: '🍉';
     position: absolute;
-    scale: 0.5;
-    margin-left: 5px;
+    scale: 1;
+    margin-left: -30px;
+}
+
+.dialog-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-header {
+    font-size: 26px;
+}
+
+.messages-container {
+    height: 80%;
+    overflow-y: auto;
+    width: 95%;
+}
+
+.write-container {
+    width: 95%;
+}
+
+.send-button {
+    border: 0px;
+    width: 45px;
+    height: 45px;
+    mask-image: url(../../../components/imgs/send-button.svg);
+    background-color: #87bc6c;
+    cursor: pointer;
+}
+
+.message-form {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2%;
+    width: 100%;
+}
+
+.message-text {
+    width: 85%;
+    max-height: 100px;
+    resize: none;
+    overflow: hidden;
+    overflow-y: auto;
+    border-radius: 15px;
+    padding: 5px;
+    background-color: #e4f3ec;
 }

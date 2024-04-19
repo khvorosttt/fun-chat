@@ -55,7 +55,6 @@ export default class ValidationForm {
     static formListener(event: Event, ws: WebSocketApi) {
         event.preventDefault();
         sessionStorage.clear();
-        sessionStorage.setItem('user', JSON.stringify(ValidationForm.user));
         const request: RequestInfo = {
             id: '',
             type: RequestType.LOGIN,
@@ -63,6 +62,7 @@ export default class ValidationForm {
                 user: ValidationForm.user,
             },
         };
+        ws.setMaybeCurrentUser(ValidationForm.user);
         ws.sendMessageToServer(request);
     }
 

@@ -26,11 +26,11 @@ export default class App {
 
     constructor() {
         this.container = document.body;
-        this.header = new HeaderView();
-        this.footer = new FooterView();
-        this.ws = new WebSocketApi();
         const pages: PageInfo[] = this.initPages();
         this.router = new Router(pages);
+        this.footer = new FooterView();
+        this.ws = new WebSocketApi();
+        this.header = new HeaderView(this.router, this.ws);
         this.contentContainer = new Component('div', '', '', ['content-container']).getContainer<HTMLDivElement>();
         this.initApp();
     }
