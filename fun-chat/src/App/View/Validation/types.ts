@@ -1,6 +1,6 @@
 export interface UserType {
     login: string;
-    password: string;
+    password?: string;
 }
 
 export interface UserResponseType {

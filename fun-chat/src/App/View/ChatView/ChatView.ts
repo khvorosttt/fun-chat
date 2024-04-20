@@ -1,5 +1,5 @@
 import WebSocketApi from '../../WebSocketApi/WebSocketApi';
-import { RequestType, RequestInfo } from '../../WebSocketApi/types';
+import { RequestType, RequestInfo, MessageSendResponseType } from '../../WebSocketApi/types';
 import Component from '../../utils/base-component';
 import { isNull } from '../../utils/base-methods';
 import { UserResponseType, UserType } from '../Validation/types';
@@ -108,9 +108,86 @@ export default class ChatView extends View {
         const messagesContainer: HTMLDivElement = new Component('div', '', '', [
             'messages-container',
         ]).getContainer<HTMLDivElement>();
+        this.sendHistoryMessagesRequared();
+        this.ws.setHistoryMessageCallback({
+            callback: (messages: MessageSendResponseType[]) => {
+                this.setHistoryMessages(messagesContainer, messages);
+            },
+        });
+        this.ws.setReceivingMessageFromUserCallback({
+            callback: (message: MessageSendResponseType) => {
+                this.ReceivingMessageFromUser(messagesContainer, message);
+            },
+        });
         this.dialogContainer.replaceChildren();
         this.dialogContainer.append(headerChat, messagesContainer);
         this.createWriteBox();
+    }
+
+    sendHistoryMessagesRequared() {
+        if (this.currentCompanion !== null) {
+            const requared: RequestInfo = {
+                id: '',
+                type: RequestType.MSG_FROM_USER,
+                payload: {
+                    user: {
+                        login: this.currentCompanion,
+                    },
+                },
+            };
+            this.ws.sendMessageToServer(requared);
+        }
+    }
+
+    setHistoryMessages(messagesContainer: HTMLDivElement, messages: MessageSendResponseType[]) {
+        messages.forEach((message) => {
+            this.ReceivingMessageFromUser(messagesContainer, message);
+        });
+    }
+
+    static formatDateNumber(value: number) {
+        if (value < 10) {
+            return `0${value}`;
+        }
+        return value;
+    }
+
+    static dateFormat(date: number) {
+        const dateMessage: Date = new Date(date);
+        return `${ChatView.formatDateNumber(dateMessage.getHours())}:${ChatView.formatDateNumber(dateMessage.getMinutes())} 
+            ${ChatView.formatDateNumber(dateMessage.getDate())}.${ChatView.formatDateNumber(dateMessage.getMonth() + 1)}.${ChatView.formatDateNumber(dateMessage.getFullYear())}`;
+    }
+
+    ReceivingMessageFromUser(messagesContainer: HTMLDivElement, message: MessageSendResponseType) {
+        const messageWrapper: HTMLDivElement = new Component('div', '', '', [
+            'message-wrapper',
+        ]).getContainer<HTMLDivElement>();
+        const messageInfo: HTMLDivElement = new Component('div', '', '', [
+            'message-info-wrapper',
+        ]).getContainer<HTMLDivElement>();
+        const messageSender: HTMLDivElement = new Component('div', '', '', [
+            'message-sender',
+        ]).getContainer<HTMLDivElement>();
+        const messageDate: HTMLDivElement = new Component('div', '', '', [
+            'message-date',
+        ]).getContainer<HTMLDivElement>();
+        messageDate.textContent = ChatView.dateFormat(message.datetime);
+        const messageText: HTMLDivElement = new Component('div', '', '', [
+            'message-content',
+        ]).getContainer<HTMLDivElement>();
+        if (this.currentCompanion === message.from) {
+            messageWrapper.classList.add('companion-msg');
+            messageSender.textContent = message.from;
+            messageInfo.append(messageSender, messageDate);
+        } else {
+            messageWrapper.classList.add('own-msg');
+            messageSender.textContent = 'You';
+            messageInfo.append(messageDate, messageSender);
+        }
+        messageText.textContent = message.text;
+        messageWrapper.append(messageInfo, messageText);
+        console.log(message);
+        messagesContainer.append(messageWrapper);
     }
 
     createWriteBox() {

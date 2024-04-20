@@ -1,5 +1,14 @@
 import { UserType } from '../View/Validation/types';
-import { CallbackErrorInfo, CallbackInfo, CallbackUsersInfo, RequestInfo, ResponseInfo, ResponseType } from './types';
+import {
+    CallbackErrorInfo,
+    CallbackInfo,
+    CallbackMessageInfo,
+    CallbackMessagesInfo,
+    CallbackUsersInfo,
+    RequestInfo,
+    ResponseInfo,
+    ResponseType,
+} from './types';
 
 export default class WebSocketApi {
     ws: WebSocket;
@@ -18,6 +27,10 @@ export default class WebSocketApi {
 
     sendUserSearchMessageCallback: CallbackInfo | null;
 
+    historyMessage: CallbackMessagesInfo | null;
+
+    receivingMessageFromUser: CallbackMessageInfo | null;
+
     constructor() {
         this.ws = new WebSocket('ws://127.0.0.1:4000');
         this.currentUser = null;
@@ -27,6 +40,8 @@ export default class WebSocketApi {
         this.showActiveUserCallback = null;
         this.showInactiveUserCallback = null;
         this.sendUserSearchMessageCallback = null;
+        this.historyMessage = null;
+        this.receivingMessageFromUser = null;
         this.connectionToServer();
     }
 
@@ -67,6 +82,12 @@ export default class WebSocketApi {
                 break;
             case ResponseType.USER_EXTERNAL_LOGOUT:
                 this.sendUserSearchMessageCallback?.callback();
+                break;
+            case ResponseType.MSG_FROM_USER:
+                this.historyMessage?.callback(response.payload.messages);
+                break;
+            case ResponseType.MSG_SEND:
+                this.receivingMessageFromUser?.callback(response.payload.message);
                 break;
             default:
                 break;
@@ -122,5 +143,13 @@ export default class WebSocketApi {
 
     setMaybeCurrentUser(user: UserType) {
         this.currentUser = user;
+    }
+
+    setHistoryMessageCallback(callback: CallbackMessagesInfo) {
+        this.historyMessage = callback;
+    }
+
+    setReceivingMessageFromUserCallback(callback: CallbackMessageInfo) {
+        this.receivingMessageFromUser = callback;
     }
 }
