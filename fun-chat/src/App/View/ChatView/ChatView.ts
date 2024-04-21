@@ -51,6 +51,7 @@ export default class ChatView extends View {
         const usersWrapper: HTMLUListElement = new Component('ul', '', '', [
             'users-list-wrapper',
         ]).getContainer<HTMLUListElement>();
+        searchUser.addEventListener('input', () => ChatView.searchAmongUsers(searchUser, usersWrapper));
         this.sendUserSearchMessage(usersWrapper);
         this.ws.setSendUserSearchMessageCallback({
             callback: () => {
@@ -59,6 +60,20 @@ export default class ChatView extends View {
         });
         usersContainer.append(searchUser, usersWrapper);
         this.container?.append(usersContainer);
+    }
+
+    static searchAmongUsers(searchUser: HTMLInputElement, usersWrapper: HTMLUListElement) {
+        const users: NodeListOf<HTMLLIElement> = usersWrapper.querySelectorAll('.user-li-wrapper');
+        const searchCriterion: string = searchUser.value.toLowerCase();
+        users.forEach((user) => {
+            const copyUser: HTMLLIElement = user;
+            console.log(user.textContent);
+            if (user.textContent?.toLowerCase().startsWith(searchCriterion)) {
+                copyUser.style.display = 'flex';
+            } else {
+                copyUser.style.display = 'none';
+            }
+        });
     }
 
     sendUserSearchMessage(usersWrapper: HTMLUListElement) {
@@ -164,6 +179,11 @@ export default class ChatView extends View {
                 ChatView.changeReadedStatus(message);
             },
         });
+        if (!messages.length) {
+            console.log('fhfhhfhf');
+            copyMsgContainer.textContent =
+                'There are no messages in your correspondence yet. Be the first to communicate!';
+        }
         messages.forEach((message) => {
             this.ReceivingMessageFromUser(messagesContainer, message);
         });
@@ -248,6 +268,7 @@ export default class ChatView extends View {
     ReceivingMessageFromUser(messagesContainer: HTMLDivElement, message: MessageSendResponseType) {
         if (message.from === this.currentCompanion || message.from === this.currentUser) {
             const copyMsgContainer: HTMLDivElement = messagesContainer;
+            copyMsgContainer.textContent = '';
             const messageWrapper: HTMLDivElement = new Component('div', '', '', [
                 'message-wrapper',
             ]).getContainer<HTMLDivElement>();

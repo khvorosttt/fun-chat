@@ -59,6 +59,7 @@
     position: relative;
     cursor: pointer;
     padding-left: 30px;
+    display: flex;
 }
 
 .active-user::before {
@@ -94,6 +95,7 @@
     padding: 10px;
     margin-right: 8px;
     margin-left: 10px;
+    text-align: center;
 }
 
 .messages-container::-webkit-scrollbar {
@@ -151,6 +153,7 @@
     word-break: break-all;
     gap: 5px;
     flex-direction: column;
+    text-align: initial;
 }
 
 .companion-msg {
