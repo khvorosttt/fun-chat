@@ -58,6 +58,11 @@ export default class ChatView extends View {
                 this.sendUserSearchMessage(usersWrapper);
             },
         });
+        this.ws.setHistoryMessageCallback({
+            callback: (messages: MessageSendResponseType[]) => {
+                this.setHistoryMessages(messages);
+            },
+        });
         usersContainer.append(searchUser, usersWrapper);
         this.container?.append(usersContainer);
     }
@@ -67,7 +72,6 @@ export default class ChatView extends View {
         const searchCriterion: string = searchUser.value.toLowerCase();
         users.forEach((user) => {
             const copyUser: HTMLLIElement = user;
-            console.log(user.textContent);
             if (user.textContent?.toLowerCase().startsWith(searchCriterion)) {
                 copyUser.style.display = 'flex';
             } else {
@@ -108,9 +112,14 @@ export default class ChatView extends View {
             const currentUser: UserType = JSON.parse(sessionInfo);
             users.forEach((user) => {
                 if (currentUser.login !== user.login) {
-                    const userNameContainer: HTMLLIElement = new Component('li', '', `${user.login}`, [
+                    const userNameContainer: HTMLLIElement = new Component('li', `${user.login}`, `${user.login}`, [
                         'user-li-wrapper',
                     ]).getContainer<HTMLLIElement>();
+                    const newMsgInfo: HTMLSpanElement = new Component('span', '', '', [
+                        'new-msgs-info',
+                    ]).getContainer<HTMLSpanElement>();
+                    userNameContainer.append(newMsgInfo);
+                    this.sendHistoryMessagesRequared(user.login);
                     if (user.isLogined) {
                         userNameContainer.classList.add('active-user');
                     } else {
@@ -126,8 +135,11 @@ export default class ChatView extends View {
     selectChat(event: Event) {
         const currentElem: HTMLLIElement | null = <HTMLLIElement>event.currentTarget;
         isNull(currentElem);
-        this.currentCompanion = currentElem.textContent;
-        const headerChat: HTMLDivElement = new Component('div', '', `${currentElem.textContent}`, [
+        this.currentCompanion = currentElem.id;
+        const newMsgInfo: HTMLSpanElement | null = currentElem.querySelector('.new-msgs-info');
+        isNull(newMsgInfo);
+        newMsgInfo.textContent = '';
+        const headerChat: HTMLDivElement = new Component('div', '', `${currentElem.id}`, [
             'chat-header',
         ]).getContainer<HTMLDivElement>();
         if (currentElem.classList.contains('active-user')) {
@@ -136,15 +148,10 @@ export default class ChatView extends View {
         const messagesContainer: HTMLDivElement = new Component('div', '', '', [
             'messages-container',
         ]).getContainer<HTMLDivElement>();
-        this.sendHistoryMessagesRequared();
-        this.ws.setHistoryMessageCallback({
-            callback: (messages: MessageSendResponseType[]) => {
-                this.setHistoryMessages(messagesContainer, messages);
-            },
-        });
+        this.sendHistoryMessagesRequared(this.currentCompanion);
         this.ws.setReceivingMessageFromUserCallback({
             callback: (message: MessageSendResponseType) => {
-                this.ReceivingMessageFromUser(messagesContainer, message);
+                this.ReceivingMessageFromUser(message);
             },
         });
         this.dialogContainer.replaceChildren();
@@ -152,14 +159,14 @@ export default class ChatView extends View {
         this.createWriteBox(messagesContainer);
     }
 
-    sendHistoryMessagesRequared() {
-        if (this.currentCompanion !== null) {
+    sendHistoryMessagesRequared(name: string | null) {
+        if (name !== null) {
             const requared: RequestInfo = {
                 id: '',
                 type: RequestType.MSG_FROM_USER,
                 payload: {
                     user: {
-                        login: this.currentCompanion,
+                        login: name,
                     },
                 },
             };
@@ -167,8 +174,21 @@ export default class ChatView extends View {
         }
     }
 
-    setHistoryMessages(messagesContainer: HTMLDivElement, messages: MessageSendResponseType[]) {
-        const copyMsgContainer: HTMLDivElement = messagesContainer;
+    static selectUserNameContainer(name: string) {
+        const users: NodeListOf<HTMLLIElement> = document.querySelectorAll('.user-li-wrapper');
+        for (let i = 0; i < users.length; i += 1) {
+            if (users[i].id === name) {
+                return users[i];
+            }
+        }
+        return null;
+    }
+
+    static sortMessages(name: string, messages: MessageSendResponseType[]) {
+        return messages.filter((message) => message.from === name && !message.status.isReaded);
+    }
+
+    setHistoryMessages(messages: MessageSendResponseType[]) {
         this.ws.setChangeDeliveredCallback({
             callback: (message: MessageResponseDeliveredType) => {
                 ChatView.changeDeliveredStatus(message);
@@ -179,28 +199,43 @@ export default class ChatView extends View {
                 ChatView.changeReadedStatus(message);
             },
         });
-        if (!messages.length) {
-            console.log('fhfhhfhf');
-            copyMsgContainer.textContent =
-                'There are no messages in your correspondence yet. Be the first to communicate!';
-        }
         messages.forEach((message) => {
-            this.ReceivingMessageFromUser(messagesContainer, message);
+            this.ReceivingMessageFromUser(message);
         });
-        const notReadMessages: NodeListOf<HTMLDivElement> | null =
-            messagesContainer.querySelectorAll('.not-read.companion-msg');
-        if (notReadMessages !== null && notReadMessages.length) {
-            const separator: HTMLDivElement = new Component('div', '', 'New messages', [
-                'separator',
-            ]).getContainer<HTMLDivElement>();
-            notReadMessages[0].before(separator);
-            copyMsgContainer.scrollTop = separator.offsetTop - 300;
-        } else {
-            copyMsgContainer.scrollTop = messagesContainer.scrollHeight;
+        if (this.currentCompanion !== null) {
+            const messagesContainer: HTMLDivElement | null = this.dialogContainer.querySelector('.messages-container');
+            isNull(messagesContainer);
+            const copyMsgContainer: HTMLDivElement = messagesContainer;
+            if (!messages.length && messagesContainer.children.length === 0) {
+                const emptyDialog: HTMLDivElement = new Component(
+                    'div',
+                    '',
+                    'There are no messages in your correspondence yet. Be the first to communicate!',
+                    ['empty-dialog']
+                ).getContainer<HTMLDivElement>();
+                copyMsgContainer.append(emptyDialog);
+            } else if (
+                messages.length &&
+                (this.currentCompanion === messages[0].from || this.currentCompanion === messages[0].to)
+            ) {
+                const notReadMessages: NodeListOf<HTMLDivElement> | null =
+                    messagesContainer.querySelectorAll('.not-read.companion-msg');
+                if (notReadMessages !== null && notReadMessages.length) {
+                    const separator: HTMLDivElement = new Component('div', '', 'New messages', [
+                        'separator',
+                    ]).getContainer<HTMLDivElement>();
+                    notReadMessages[0].before(separator);
+                    copyMsgContainer.scrollTop = separator.offsetTop - 300;
+                } else {
+                    copyMsgContainer.scrollTop = messagesContainer.scrollHeight;
+                }
+            }
+            messagesContainer.addEventListener('wheel', (event: Event) => this.readListener(event, messagesContainer));
+            messagesContainer.addEventListener('touchend', (event: Event) =>
+                this.readListener(event, messagesContainer)
+            );
+            messagesContainer.addEventListener('click', (event: Event) => this.readListener(event, messagesContainer));
         }
-        messagesContainer.addEventListener('wheel', (event: Event) => this.readListener(event, messagesContainer));
-        messagesContainer.addEventListener('touchend', (event: Event) => this.readListener(event, messagesContainer));
-        messagesContainer.addEventListener('click', (event: Event) => this.readListener(event, messagesContainer));
     }
 
     static changeReadedStatus(messageInfo: MessageResponseReadType) {
@@ -223,6 +258,13 @@ export default class ChatView extends View {
             }
         }
         this.changeReadStatusSend(messagesContainer);
+        isNull(this.currentCompanion);
+        const nameCompanionContainer: HTMLLIElement | null = ChatView.selectUserNameContainer(this.currentCompanion);
+        isNull(nameCompanionContainer);
+        const newMsgInfo: HTMLSpanElement | null = nameCompanionContainer.querySelector('.new-msgs-info');
+        isNull(newMsgInfo);
+        newMsgInfo.textContent = ``;
+        newMsgInfo.classList.remove('show');
     }
 
     static changeDeliveredStatus(messageInfo: MessageResponseDeliveredType) {
@@ -265,57 +307,85 @@ export default class ChatView extends View {
             ${ChatView.formatDateNumber(dateMessage.getDate())}.${ChatView.formatDateNumber(dateMessage.getMonth() + 1)}.${ChatView.formatDateNumber(dateMessage.getFullYear())}`;
     }
 
-    ReceivingMessageFromUser(messagesContainer: HTMLDivElement, message: MessageSendResponseType) {
-        if (message.from === this.currentCompanion || message.from === this.currentUser) {
-            const copyMsgContainer: HTMLDivElement = messagesContainer;
-            copyMsgContainer.textContent = '';
-            const messageWrapper: HTMLDivElement = new Component('div', '', '', [
-                'message-wrapper',
-            ]).getContainer<HTMLDivElement>();
-            messageWrapper.id = message.id;
-            const messageInfo: HTMLDivElement = new Component('div', '', '', [
-                'message-info-wrapper',
-            ]).getContainer<HTMLDivElement>();
-            const messageSender: HTMLDivElement = new Component('div', '', '', [
-                'message-sender',
-            ]).getContainer<HTMLDivElement>();
-            const messageDate: HTMLDivElement = new Component('div', '', '', [
-                'message-date',
-            ]).getContainer<HTMLDivElement>();
-            messageDate.textContent = ChatView.dateFormat(message.datetime);
-            const messageText: HTMLDivElement = new Component('div', '', '', [
-                'message-content',
-            ]).getContainer<HTMLDivElement>();
-            const messageStatus: HTMLDivElement = new Component('div', '', '', [
-                'message-status',
-            ]).getContainer<HTMLDivElement>();
-            if (this.currentCompanion === message.from) {
-                messageWrapper.classList.add('companion-msg');
-                messageSender.textContent = message.from;
-                if (!message.status.isReaded) {
-                    messageWrapper.classList.add('not-read');
-                }
-                messageInfo.append(messageSender, messageDate);
-            } else {
-                messageWrapper.classList.add('own-msg');
-                messageSender.textContent = 'You';
-                if (!message.status.isDelivered) {
-                    messageStatus.textContent = '🐝';
-                } else if (!message.status.isReaded) {
-                    messageStatus.textContent = '✔';
+    ReceivingMessageFromUser(message: MessageSendResponseType) {
+        if (message.to === this.currentUser) {
+            if (!message.status.isReaded && message.from !== this.currentUser) {
+                let nameCompanion: string;
+                if (this.currentUser === message.from) {
+                    nameCompanion = message.to;
                 } else {
-                    messageStatus.textContent = '✓✓';
+                    nameCompanion = message.from;
                 }
-                messageInfo.append(messageDate, messageSender);
+                const nameCompanionContainer: HTMLLIElement | null = ChatView.selectUserNameContainer(nameCompanion);
+                isNull(nameCompanionContainer);
+                const newMsgInfo: HTMLSpanElement | null = nameCompanionContainer.querySelector('.new-msgs-info');
+                isNull(newMsgInfo);
+                let currentUnread: string;
+                if (newMsgInfo.textContent?.includes('+')) {
+                    currentUnread = newMsgInfo.textContent.slice(1);
+                } else {
+                    currentUnread = '0';
+                }
+                newMsgInfo.textContent = `+${Number(currentUnread) + 1}`;
+                newMsgInfo.classList.add('show');
             }
-            messageText.textContent = message.text;
-            messageWrapper.append(messageInfo, messageText, messageStatus);
-            copyMsgContainer.append(messageWrapper);
-            const separator: HTMLDivElement | null = document.querySelector('.separator');
-            if (separator !== null) {
-                copyMsgContainer.scrollTop = separator.offsetTop - 300;
-            } else {
-                copyMsgContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        if (message.from === this.currentCompanion || message.from === this.currentUser) {
+            const messagesContainer: HTMLDivElement | null = this.dialogContainer.querySelector('.messages-container');
+            if (messagesContainer !== null) {
+                const copyMsgContainer: HTMLDivElement = messagesContainer;
+                const emptyDialog: HTMLDivElement | null = copyMsgContainer.querySelector('.empty-dialog');
+                if (emptyDialog !== null) {
+                    emptyDialog.remove();
+                }
+                const messageWrapper: HTMLDivElement = new Component('div', '', '', [
+                    'message-wrapper',
+                ]).getContainer<HTMLDivElement>();
+                messageWrapper.id = message.id;
+                const messageInfo: HTMLDivElement = new Component('div', '', '', [
+                    'message-info-wrapper',
+                ]).getContainer<HTMLDivElement>();
+                const messageSender: HTMLDivElement = new Component('div', '', '', [
+                    'message-sender',
+                ]).getContainer<HTMLDivElement>();
+                const messageDate: HTMLDivElement = new Component('div', '', '', [
+                    'message-date',
+                ]).getContainer<HTMLDivElement>();
+                messageDate.textContent = ChatView.dateFormat(message.datetime);
+                const messageText: HTMLDivElement = new Component('div', '', '', [
+                    'message-content',
+                ]).getContainer<HTMLDivElement>();
+                const messageStatus: HTMLDivElement = new Component('div', '', '', [
+                    'message-status',
+                ]).getContainer<HTMLDivElement>();
+                if (this.currentCompanion === message.from) {
+                    messageWrapper.classList.add('companion-msg');
+                    messageSender.textContent = message.from;
+                    if (!message.status.isReaded) {
+                        messageWrapper.classList.add('not-read');
+                    }
+                    messageInfo.append(messageSender, messageDate);
+                } else {
+                    messageWrapper.classList.add('own-msg');
+                    messageSender.textContent = 'You';
+                    if (!message.status.isDelivered) {
+                        messageStatus.textContent = '🐝';
+                    } else if (!message.status.isReaded) {
+                        messageStatus.textContent = '✔';
+                    } else {
+                        messageStatus.textContent = '✓✓';
+                    }
+                    messageInfo.append(messageDate, messageSender);
+                }
+                messageText.textContent = message.text;
+                messageWrapper.append(messageInfo, messageText, messageStatus);
+                copyMsgContainer.append(messageWrapper);
+                const separator: HTMLDivElement | null = document.querySelector('.separator');
+                if (separator !== null) {
+                    copyMsgContainer.scrollTop = separator.offsetTop - 300;
+                } else {
+                    copyMsgContainer.scrollTop = messagesContainer.scrollHeight;
+                }
             }
         }
     }
@@ -367,6 +437,15 @@ export default class ChatView extends View {
                 separator.remove();
             }
             this.changeReadStatusSend(messagesContainer);
+            isNull(this.currentCompanion);
+            const nameCompanionContainer: HTMLLIElement | null = ChatView.selectUserNameContainer(
+                this.currentCompanion
+            );
+            isNull(nameCompanionContainer);
+            const newMsgInfo: HTMLSpanElement | null = nameCompanionContainer.querySelector('.new-msgs-info');
+            isNull(newMsgInfo);
+            newMsgInfo.textContent = ``;
+            newMsgInfo.classList.remove('show');
         }
     }
 }

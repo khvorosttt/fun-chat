@@ -60,6 +60,22 @@
     cursor: pointer;
     padding-left: 30px;
     display: flex;
+    justify-content: space-between;
+}
+
+.new-msgs-info {
+    border-radius: 20px;
+    min-width: 30px;
+    padding: 0 5px;
+    border: 1px solid #053c2c;
+    background-color: #e4f3ec;
+    color: #053c2c;
+    text-align: center;
+    display: none;
+}
+
+.show {
+    display: block;
 }
 
 .active-user::before {
