@@ -7,6 +7,7 @@ export enum RequestType {
     LOGOUT = 'USER_LOGOUT',
     MSG_SEND = 'MSG_SEND',
     MSG_FROM_USER = 'MSG_FROM_USER',
+    MSG_READ = 'MSG_READ',
 }
 
 export enum ResponseType {
@@ -19,18 +20,25 @@ export enum ResponseType {
     USER_EXTERNAL_LOGOUT = 'USER_EXTERNAL_LOGOUT',
     MSG_SEND = 'MSG_SEND',
     MSG_FROM_USER = 'MSG_FROM_USER',
+    MSG_DELIVER = 'MSG_DELIVER',
+    MSG_READ = 'MSG_READ',
 }
 
 export interface RequestInfo {
     id: string;
     type: string;
-    payload: UserPayload | null | MessageSendPayload;
+    payload: UserPayload | null | MessageSendPayload | MessageRequaredReadPayload;
 }
 
 export interface ResponseInfo {
     id: string;
     type: string;
-    payload: UserResponsePayload & ErrorInfo & UsersResponsePayload & MessagesSendResponse & MessageSendResponse;
+    payload: UserResponsePayload &
+        ErrorInfo &
+        UsersResponsePayload &
+        MessagesSendResponse &
+        MessageSendResponse &
+        MessageResponseStatusPayload;
 }
 
 export interface ErrorInfo {
@@ -99,4 +107,34 @@ export interface MessageSendResponseType {
     text: string;
     datetime: number;
     status: Status;
+}
+
+export interface MessageResponseStatusPayload {
+    message: MessageResponseDeliveredType | MessageResponseReadType;
+}
+
+export interface MessageResponseDeliveredType {
+    id: string;
+    status: Pick<Status, 'isDelivered'>;
+}
+
+export interface MessageRequaredReadPayload {
+    message: MessageRequaredReadType;
+}
+
+export interface MessageRequaredReadType {
+    id: string;
+}
+
+export interface MessageResponseReadType {
+    id: string;
+    status: Pick<Status, 'isReaded'>;
+}
+
+export interface CallbackDeliveredInfo {
+    callback: (message: MessageResponseDeliveredType) => void;
+}
+
+export interface CallbackReadedInfo {
+    callback: (message: MessageResponseReadType) => void;
 }

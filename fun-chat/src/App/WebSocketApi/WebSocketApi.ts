@@ -1,9 +1,11 @@
 import { UserType } from '../View/Validation/types';
 import {
+    CallbackDeliveredInfo,
     CallbackErrorInfo,
     CallbackInfo,
     CallbackMessageInfo,
     CallbackMessagesInfo,
+    CallbackReadedInfo,
     CallbackUsersInfo,
     RequestInfo,
     ResponseInfo,
@@ -31,6 +33,10 @@ export default class WebSocketApi {
 
     receivingMessageFromUser: CallbackMessageInfo | null;
 
+    changeDeliveredStatus: CallbackDeliveredInfo | null;
+
+    changeReadedStatus: CallbackReadedInfo | null;
+
     constructor() {
         this.ws = new WebSocket('ws://127.0.0.1:4000');
         this.currentUser = null;
@@ -42,6 +48,8 @@ export default class WebSocketApi {
         this.sendUserSearchMessageCallback = null;
         this.historyMessage = null;
         this.receivingMessageFromUser = null;
+        this.changeDeliveredStatus = null;
+        this.changeReadedStatus = null;
         this.connectionToServer();
     }
 
@@ -88,6 +96,12 @@ export default class WebSocketApi {
                 break;
             case ResponseType.MSG_SEND:
                 this.receivingMessageFromUser?.callback(response.payload.message);
+                break;
+            case ResponseType.MSG_DELIVER:
+                this.changeDeliveredStatus?.callback(response.payload.message);
+                break;
+            case ResponseType.MSG_READ:
+                this.changeReadedStatus?.callback(response.payload.message);
                 break;
             default:
                 break;
@@ -151,5 +165,13 @@ export default class WebSocketApi {
 
     setReceivingMessageFromUserCallback(callback: CallbackMessageInfo) {
         this.receivingMessageFromUser = callback;
+    }
+
+    setChangeDeliveredCallback(callback: CallbackDeliveredInfo) {
+        this.changeDeliveredStatus = callback;
+    }
+
+    setChangeReadedCallback(callback: CallbackReadedInfo) {
+        this.changeReadedStatus = callback;
     }
 }
