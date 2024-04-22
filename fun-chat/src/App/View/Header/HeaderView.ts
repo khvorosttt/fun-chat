@@ -3,6 +3,7 @@ import WebSocketApi from '../../WebSocketApi/WebSocketApi';
 import { RequestType, RequestInfo } from '../../WebSocketApi/types';
 import Component from '../../utils/base-component';
 import { isNull } from '../../utils/base-methods';
+import { UserType } from '../Validation/types';
 import View from '../View';
 import './header.css';
 
@@ -19,7 +20,7 @@ export default class HeaderView extends View {
         const nameApp: HTMLHeadingElement = new Component('h1', '', 'Fun Chat', [
             'name-app',
         ]).getContainer<HTMLHeadingElement>();
-        const logoutButton: HTMLButtonElement = new Component('button', '', 'LOGOUT', [
+        const logoutButton: HTMLButtonElement = new Component('button', '', 'Logout', [
             'logout-button',
         ]).getContainer<HTMLButtonElement>();
         logoutButton.addEventListener('click', () => HeaderView.logoutUser(router, ws));
@@ -49,13 +50,13 @@ export default class HeaderView extends View {
 
     setNameUser() {
         const sessionInfo: string | null = sessionStorage.getItem('user');
-        let name: string;
+        let user: UserType | null;
         if (sessionInfo) {
-            name = sessionInfo;
+            user = JSON.parse(sessionInfo);
         } else {
-            name = '';
+            user = null;
         }
         isNull(this.currentUser);
-        this.currentUser.textContent = name;
+        this.currentUser.textContent = user ? user.login : '';
     }
 }

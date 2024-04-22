@@ -1,10 +1,11 @@
 .chat-container {
     height: 80vh;
-    width: 70vw;
+    width: 85vw;
     background-color: rgb(98%, 76%, 83%, 0.8);
     border-radius: 15px;
     display: flex;
     border: 1px solid #87bc6c;
+    color: #053c2c;
 }
 
 .users-container {

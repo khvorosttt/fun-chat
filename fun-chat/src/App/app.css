@@ -8,4 +8,5 @@ body {
     background-position: center center;
     background-size: cover;
     justify-content: space-between;
+    gap: 15px;
 }

@@ -5,6 +5,36 @@
     align-items: center;
     justify-content: space-between;
     border-radius: 15px;
-    border: 2px solid black;
+    border: 2px solid #053c2c;
     background-color: rgb(89%, 95%, 93%, 0.8);
+    padding: 10px;
+    color: #053c2c;
+}
+
+.current-user-name {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.logout-button,
+.logout-button:disabled:hover {
+    font-size: 26px;
+    padding: 7px;
+    background-color: #87bc6c;
+    border: 1px solid #fac3d3;
+    color: #fac3d3;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.logout-button:disabled,
+.logout-button:disabled:hover {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.logout-button:hover {
+    background-color: #fac3d3;
+    border: 1px solid #87bc6c;
+    color: #87bc6c;
 }

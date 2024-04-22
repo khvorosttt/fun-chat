@@ -12,13 +12,11 @@ export default class FooterView extends View {
         const footerWrapper: HTMLDivElement = new Component('div', '', '', [
             'footer_info',
         ]).getContainer<HTMLDivElement>();
-        const authorGit: HTMLAnchorElement = new Component('a', '', 'khvorosttt', [
+        const authorGit: HTMLAnchorElement = new Component('a', '', 'KHVOROSTTT', [
             'author-git',
         ]).getContainer<HTMLAnchorElement>();
-        const logoGit: HTMLDivElement = new Component('div', '', '', ['git_logo']).getContainer<HTMLDivElement>();
         authorGit.target = '_blank';
         authorGit.href = 'https://github.com/khvorosttt';
-        authorGit.append(logoGit);
         const copyright: HTMLDivElement = new Component('div', '', 'Copyright Fun Chat, 2024', [
             'copyright',
         ]).getContainer<HTMLDivElement>();

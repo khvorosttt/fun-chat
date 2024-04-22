@@ -8,6 +8,7 @@ import {
 } from '../../WebSocketApi/types';
 import Component from '../../utils/base-component';
 import { isNull } from '../../utils/base-methods';
+import HeaderView from '../Header/HeaderView';
 import { UserResponseType, UserType } from '../Validation/types';
 import View from '../View';
 import './chat.css';
@@ -21,7 +22,7 @@ export default class ChatView extends View {
 
     ws: WebSocketApi;
 
-    constructor(ws: WebSocketApi) {
+    constructor(ws: WebSocketApi, header: HeaderView) {
         super(['chat-container']);
         this.ws = ws;
         this.currentCompanion = null;
@@ -29,14 +30,15 @@ export default class ChatView extends View {
         this.dialogContainer = new Component('div', '', 'Select a person to start a conversation.', [
             'dialog-container',
         ]).getContainer<HTMLDivElement>();
-        this.initChat();
+        this.initChat(header);
     }
 
-    initChat() {
+    initChat(header: HeaderView) {
         const sessionInfo: string | null = sessionStorage.getItem('user');
         isNull(sessionInfo);
         const user: UserType = JSON.parse(sessionInfo);
         this.currentUser = user.login;
+        header.setNameUser();
         this.setUsersContainer();
         this.container?.append(this.dialogContainer);
     }

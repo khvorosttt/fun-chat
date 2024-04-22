@@ -5,8 +5,9 @@
     align-items: center;
     justify-content: center;
     border-radius: 15px;
-    border: 2px solid black;
+    border: 2px solid #053c2c;
     background-color: rgb(89%, 95%, 93%, 0.8);
+    color: #053c2c;
 }
 
 .footer_info {
@@ -22,6 +23,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    text-decoration: none;
+    color: #053c2c;
 }
 .copyright {
     font-size: 14px;
@@ -37,15 +40,6 @@
 .copyright:before {
     content: '©';
 }
-.git_logo {
-    width: 30px;
-    height: 30px;
-    background: url(../../../components/imgs/git_logo.svg);
-    background-repeat: no-repeat;
-    background-position: center center;
-    object-fit: contain;
-}
-
 .rss-logo {
     width: 80px;
     height: 30px;

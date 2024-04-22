@@ -134,6 +134,7 @@ export default class LoginView extends View {
             inputContainer.autocomplete = 'current-password';
         } else {
             inputContainer.autocomplete = 'username';
+            inputContainer.maxLength = 20;
         }
         return input.getContainer<HTMLInputElement>();
     }

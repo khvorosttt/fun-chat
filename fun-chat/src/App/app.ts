@@ -75,7 +75,7 @@ export default class App {
             {
                 pagePath: PagePath.CHAT,
                 callback: () => {
-                    const chatView: ChatView = new ChatView(this.ws);
+                    const chatView: ChatView = new ChatView(this.ws, this.header);
                     this.setView(chatView);
                 },
             },

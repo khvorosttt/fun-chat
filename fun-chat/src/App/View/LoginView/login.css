@@ -8,6 +8,7 @@
     width: 500px;
     height: 550px;
     border-radius: 50px;
+    color: #053c2c;
 }
 
 .nameBox,
@@ -34,9 +35,9 @@
 .login-button:disabled:hover {
     font-size: 26px;
     padding: 7px;
-    background-color: #75367c;
-    border: 1px solid #e298a8;
-    color: #e298a8;
+    background-color: #87bc6c;
+    border: 1px solid #fac3d3;
+    color: #fac3d3;
     border-radius: 10px;
     cursor: pointer;
 }
@@ -48,7 +49,7 @@
 }
 
 .login-button:hover {
-    background-color: #e298a8;
-    border: 1px solid #75367c;
-    color: #75367c;
+    background-color: #fac3d3;
+    border: 1px solid #87bc6c;
+    color: #87bc6c;
 }
