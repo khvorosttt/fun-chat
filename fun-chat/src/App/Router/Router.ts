@@ -27,6 +27,10 @@ export class Router {
             this.pages.find((item) => item.pagePath === 'chat')?.callback();
             return;
         }
-        this.pages.find((item) => item.pagePath === 'login')?.callback();
+        if (path === 'about') {
+            this.pages.find((item) => item.pagePath === path)?.callback();
+        } else {
+            this.pages.find((item) => item.pagePath === 'login')?.callback();
+        }
     }
 }

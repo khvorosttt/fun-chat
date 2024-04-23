@@ -34,6 +34,7 @@
     opacity: 0.8;
 }
 
+.about-button,
 .logout-button:hover {
     background-color: #fac3d3;
     border: 1px solid #87bc6c;
@@ -42,4 +43,19 @@
 
 .show {
     display: block;
+}
+
+.button-wrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.about-button {
+    font-size: 26px;
+    padding: 7px;
+    background-color: #87bc6c;
+    border: 1px solid #fac3d3;
+    color: #fac3d3;
+    border-radius: 10px;
+    cursor: pointer;
 }

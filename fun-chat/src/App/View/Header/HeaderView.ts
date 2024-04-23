@@ -23,12 +23,20 @@ export default class HeaderView extends View {
         const nameApp: HTMLHeadingElement = new Component('h1', '', 'Fun Chat', [
             'name-app',
         ]).getContainer<HTMLHeadingElement>();
+        const buttonWrapper: HTMLDivElement = new Component('div', '', '', [
+            'button-wrapper',
+        ]).getContainer<HTMLDivElement>();
         this.logoutButton = new Component('button', '', 'Logout', ['logout-button']).getContainer<HTMLButtonElement>();
         isNull(this.logoutButton);
         this.logoutButton.addEventListener('click', () => this.logoutUser(router, ws));
         this.currentUser = new Component('div', '', '', ['current-user-name']).getContainer<HTMLDivElement>();
+        const aboutButton: HTMLButtonElement = new Component('button', '', 'About', [
+            'about-button',
+        ]).getContainer<HTMLButtonElement>();
+        buttonWrapper.append(this.logoutButton, aboutButton);
+        aboutButton.addEventListener('click', () => router.navigate('about'));
         this.setNameUser();
-        this.container?.append(nameApp, this.currentUser, this.logoutButton);
+        this.container?.append(nameApp, this.currentUser, buttonWrapper);
     }
 
     logoutUser(router: Router, ws: WebSocketApi) {

@@ -10,6 +10,7 @@ import Component from './utils/base-component';
 import WebSocketApi from './WebSocketApi/WebSocketApi';
 import ChatView from './View/ChatView/ChatView';
 import { RequestType, RequestInfo } from './WebSocketApi/types';
+import AboutView from './View/AboutView/AboutView';
 
 export default class App {
     container: HTMLElement;
@@ -77,6 +78,13 @@ export default class App {
                 callback: () => {
                     const chatView: ChatView = new ChatView(this.ws, this.header);
                     this.setView(chatView);
+                },
+            },
+            {
+                pagePath: PagePath.ABOUT,
+                callback: () => {
+                    const aboutView: AboutView = new AboutView(this.router);
+                    this.setView(aboutView);
                 },
             },
         ];
