@@ -12,6 +12,7 @@ import {
     ResponseType,
     CallbackDeleteInfo,
     CallbackEditInfo,
+    RequestType,
 } from './types';
 
 export default class WebSocketApi {
@@ -65,11 +66,30 @@ export default class WebSocketApi {
         this.ws.onopen = () => {
             console.log('Connection to server established');
         };
-
         this.ws.addEventListener('message', (event) => {
             const response: ResponseInfo = JSON.parse(event.data);
             this.switchTypeMessage(response);
         });
+        this.ws.onclose = () => {
+            console.log('Connection to the server was interrupted');
+            this.reconnection();
+        };
+    }
+
+    reconnection() {
+        this.ws = new WebSocket('ws://127.0.0.1:4000');
+        const sessionInfo: string | null = sessionStorage.getItem('user');
+        if (sessionInfo !== null) {
+            const request: RequestInfo = {
+                id: '',
+                type: RequestType.LOGIN,
+                payload: {
+                    user: JSON.parse(sessionInfo),
+                },
+            };
+            this.sendMessageToServer(request);
+        }
+        this.connectionToServer();
     }
 
     switchTypeMessage(response: ResponseInfo) {

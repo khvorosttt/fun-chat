@@ -379,6 +379,9 @@ export default class ChatView extends View {
                     if (!message.status.isReaded) {
                         messageWrapper.classList.add('not-read');
                     }
+                    if (message.status.isEdited) {
+                        messageStatusEdited.textContent = '✏️';
+                    }
                     messageInfo.append(messageSender, messageDate);
                 } else {
                     messageWrapper.classList.add('own-msg');
