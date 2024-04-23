@@ -17,7 +17,8 @@
     flex-direction: column;
     gap: 15px;
     height: 90px;
-    width: 370px;
+    width: 80%;
+    align-items: center;
 }
 
 .error-name-msg,
@@ -29,6 +30,7 @@
 .name-input,
 .password-input {
     height: 25px;
+    width: 80%;
 }
 
 .login-button,
@@ -52,4 +54,19 @@
     background-color: #fac3d3;
     border: 1px solid #87bc6c;
     color: #87bc6c;
+}
+
+.name-info,
+.password-info {
+    width: 80%;
+}
+
+@media (max-width: 650px) {
+    .login-form {
+        padding: 15px;
+        gap: 50px;
+        width: 340px;
+        height: 550px;
+        border-radius: 50px;
+    }
 }

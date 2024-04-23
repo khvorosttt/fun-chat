@@ -1,6 +1,6 @@
 .footer {
     height: 60px;
-    width: 95%;
+    width: 90%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -45,4 +45,23 @@
     height: 30px;
     background: url(../../../components/imgs/rs_school_js.svg);
     background-repeat: no-repeat;
+}
+
+@media (max-width: 600px) {
+    .footer_info {
+        padding: 0px 30px;
+    }
+
+    .author-git {
+        font-size: 14px;
+    }
+    .copyright {
+        font-size: 10px;
+    }
+    .rss-logo {
+        width: 80px;
+        height: 30px;
+        background: url(../../../components/imgs/rs_school_js.svg);
+        background-repeat: no-repeat;
+    }
 }

@@ -59,3 +59,26 @@
     border-radius: 10px;
     cursor: pointer;
 }
+
+@media (max-width: 600px) {
+    .header {
+        height: 50px;
+        width: 85%;
+        padding: 10px;
+    }
+    h1 {
+        font-size: 14px;
+    }
+    .current-user-name {
+        font-size: 14px;
+    }
+    .button-wrapper {
+        display: flex;
+        gap: 5px;
+    }
+    .logout-button,
+    .about-button {
+        font-size: 12px;
+        padding: 4px;
+    }
+}

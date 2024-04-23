@@ -92,14 +92,16 @@
     justify-content: center;
     align-items: center;
     gap: 10px;
+    width: 60%;
 }
 
 .chat-header {
     font-size: 26px;
-    width: 90%;
+    max-width: 90%;
     border-bottom: 3px solid #87bc6c;
     padding: 5px;
     text-align: center;
+    word-wrap: break-word;
 }
 
 .messages-container {
@@ -151,7 +153,7 @@
 }
 
 .message-text {
-    width: 85%;
+    width: 80%;
     max-height: 100px;
     resize: none;
     overflow: hidden;
@@ -224,4 +226,63 @@
 .separator:after {
     margin-right: -100%;
     right: -10px;
+}
+
+@media (max-width: 890px) {
+    .chat-header {
+        max-width: 70%;
+        font-size: 18px;
+    }
+    .empty-dialog {
+        font-size: 14px;
+        align-self: center;
+        max-width: 50%;
+        text-align: center;
+        word-break: break-word;
+    }
+    .messages-container {
+        height: 80%;
+        overflow-y: auto;
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        margin-right: 8px;
+        margin-left: 10px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .dialog-container {
+        width: 50%;
+    }
+    .write-container {
+        width: 90%;
+    }
+    .message-form {
+        width: 100%;
+    }
+    .message-info-wrapper {
+        flex-direction: column;
+        gap: 3px;
+    }
+
+    .companion-msg .message-info-wrapper {
+        flex-direction: column-reverse;
+        gap: 3px;
+    }
+
+    .send-button {
+        scale: 0.8;
+    }
+
+    .message-text {
+        width: 65%;
+    }
+
+    .chat-header {
+        font-size: 14px;
+    }
 }
