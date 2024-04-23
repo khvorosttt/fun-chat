@@ -4,7 +4,7 @@ import { Router } from '../../Router/Router';
 import './about.css';
 
 const ABOUT_TEXT: string =
-    'This application is intended for communication. Select your interlocutor from the list of registered users and start chatting.';
+    'This application is intended for communication. Select your interlocutor from the list of registered users and start chatting. To delete or change a sent message, click on it once.';
 
 export default class AboutView extends View {
     constructor(router: Router) {
