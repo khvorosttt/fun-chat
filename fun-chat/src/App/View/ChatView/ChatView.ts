@@ -365,6 +365,13 @@ export default class ChatView extends View {
                 const messageStatus: HTMLDivElement = new Component('div', '', '', [
                     'message-status',
                 ]).getContainer<HTMLDivElement>();
+                const messageStatusEdited: HTMLSpanElement = new Component('span', '', '', [
+                    'message-status-edited',
+                ]).getContainer<HTMLSpanElement>();
+                const messageStatusReaded: HTMLSpanElement = new Component('span', '', '', [
+                    'message-status-readed',
+                ]).getContainer<HTMLSpanElement>();
+                messageStatus.append(messageStatusEdited, messageStatusReaded);
                 messageText.textContent = message.text;
                 if (this.currentCompanion === message.from) {
                     messageWrapper.classList.add('companion-msg');
@@ -376,12 +383,15 @@ export default class ChatView extends View {
                 } else {
                     messageWrapper.classList.add('own-msg');
                     messageSender.textContent = 'You';
+                    if (message.status.isEdited) {
+                        messageStatusEdited.textContent = '✏️';
+                    }
                     if (!message.status.isDelivered) {
-                        messageStatus.textContent = '🐝';
+                        messageStatusReaded.textContent = '🐝';
                     } else if (!message.status.isReaded) {
-                        messageStatus.textContent = '✔';
+                        messageStatusReaded.textContent = '✔';
                     } else {
-                        messageStatus.textContent = '✓✓';
+                        messageStatusReaded.textContent = '✓✓';
                     }
                     messageInfo.append(messageDate, messageSender);
                     messageWrapper.addEventListener('click', () => {

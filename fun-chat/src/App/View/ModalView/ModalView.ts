@@ -1,6 +1,7 @@
 import WebSocketApi from '../../WebSocketApi/WebSocketApi';
-import { DeleteResponseType, RequestType } from '../../WebSocketApi/types';
+import { DeleteResponseType, MessageResponseEditedType, RequestType } from '../../WebSocketApi/types';
 import Component from '../../utils/base-component';
+import { isNull } from '../../utils/base-methods';
 import View from '../View';
 import './modal.css';
 
@@ -18,7 +19,7 @@ export default class ModalView extends View {
         this.id = null;
         this.text = null;
         this.ws = ws;
-        this.textContainer = new Component('textarea', '', 'mmm', [
+        this.textContainer = new Component('textarea', '', '', [
             'message-change-text',
         ]).getContainer<HTMLTextAreaElement>();
         this.initModal();
@@ -29,9 +30,10 @@ export default class ModalView extends View {
         const buttonsWrapper: HTMLDivElement = new Component('div', '', '', [
             'buttons-change-wrapper',
         ]).getContainer<HTMLDivElement>();
-        const sendButton: HTMLButtonElement = new Component('button', '', 'Send', [
+        const sendButton: HTMLButtonElement = new Component('button', '', 'Edit', [
             'send-change-button',
         ]).getContainer<HTMLButtonElement>();
+        sendButton.addEventListener('click', () => this.changeResponse(this.textContainer.value));
         const cancelButton: HTMLButtonElement = new Component('button', '', 'Cancel', [
             'cancel-change-button',
         ]).getContainer<HTMLButtonElement>();
@@ -43,6 +45,11 @@ export default class ModalView extends View {
         this.ws.setDeleteCallback({
             callback: (message: DeleteResponseType) => {
                 this.deleteLogic(message);
+            },
+        });
+        this.ws.setEditCallback({
+            callback: (message: MessageResponseEditedType) => {
+                this.changeLogic(message);
             },
         });
         buttonsWrapper.append(sendButton, cancelButton, deleteButton);
@@ -64,6 +71,7 @@ export default class ModalView extends View {
 
     cancelLogic() {
         this.id = null;
+        this.text = null;
         this.container?.classList.remove('modal-active');
     }
 
@@ -78,6 +86,35 @@ export default class ModalView extends View {
                     },
                 },
             });
+        }
+    }
+
+    changeResponse(text: string | null) {
+        this.text = text;
+        if (this.id !== null && this.text?.trim() !== '' && this.text !== null) {
+            this.ws.sendMessageToServer({
+                id: '',
+                type: RequestType.MSG_EDIT,
+                payload: {
+                    message: {
+                        id: this.id,
+                        text: this.text,
+                    },
+                },
+            });
+        }
+    }
+
+    changeLogic(message: MessageResponseEditedType) {
+        const messageWrapper: HTMLElement | null = document.getElementById(message.id);
+        if (messageWrapper !== null && message.status.isEdited) {
+            const messageText: HTMLDivElement | null = messageWrapper.querySelector('.message-content');
+            isNull(messageText);
+            const messageEdited: HTMLDivElement | null = messageWrapper.querySelector('.message-status-edited');
+            isNull(messageEdited);
+            messageText.textContent = message.text;
+            messageEdited.textContent = '✏️';
+            this.cancelLogic();
         }
     }
 

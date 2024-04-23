@@ -43,7 +43,8 @@ export interface ResponseInfo {
         MessagesSendResponse &
         MessageSendResponse &
         MessageResponseStatusPayload &
-        DeleteResponsePayload;
+        DeleteResponsePayload &
+        MessageResponseEditedType;
 }
 
 export interface ErrorInfo {
@@ -123,6 +124,12 @@ export interface MessageResponseDeliveredType {
     status: Pick<Status, 'isDelivered'>;
 }
 
+export interface MessageResponseEditedType {
+    id: string;
+    text: string;
+    status: Pick<Status, 'isEdited'>;
+}
+
 export interface MessageRequaredReadPayload {
     message: MessageRequaredReadType;
 }
@@ -157,4 +164,8 @@ export interface DeleteResponseType {
 
 export interface CallbackDeleteInfo {
     callback: (message: DeleteResponseType) => void;
+}
+
+export interface CallbackEditInfo {
+    callback: (message: MessageResponseEditedType) => void;
 }
