@@ -9,6 +9,7 @@ import {
 import Component from '../../utils/base-component';
 import { isNull } from '../../utils/base-methods';
 import HeaderView from '../Header/HeaderView';
+import ModalView from '../ModalView/ModalView';
 import { UserResponseType, UserType } from '../Validation/types';
 import View from '../View';
 import './chat.css';
@@ -22,11 +23,14 @@ export default class ChatView extends View {
 
     ws: WebSocketApi;
 
-    constructor(ws: WebSocketApi, header: HeaderView) {
+    modal: ModalView;
+
+    constructor(ws: WebSocketApi, header: HeaderView, modal: ModalView) {
         super(['chat-container']);
         this.ws = ws;
         this.currentCompanion = null;
         this.currentUser = null;
+        this.modal = modal;
         this.dialogContainer = new Component('div', '', 'Select a person to start a conversation.', [
             'dialog-container',
         ]).getContainer<HTMLDivElement>();
@@ -361,6 +365,7 @@ export default class ChatView extends View {
                 const messageStatus: HTMLDivElement = new Component('div', '', '', [
                     'message-status',
                 ]).getContainer<HTMLDivElement>();
+                messageText.textContent = message.text;
                 if (this.currentCompanion === message.from) {
                     messageWrapper.classList.add('companion-msg');
                     messageSender.textContent = message.from;
@@ -379,8 +384,11 @@ export default class ChatView extends View {
                         messageStatus.textContent = '✓✓';
                     }
                     messageInfo.append(messageDate, messageSender);
+                    messageWrapper.addEventListener('click', () => {
+                        this.modal.setClassActive();
+                        this.modal.setMessageData(messageWrapper.id, messageText.textContent);
+                    });
                 }
-                messageText.textContent = message.text;
                 messageWrapper.append(messageInfo, messageText, messageStatus);
                 copyMsgContainer.append(messageWrapper);
                 const separator: HTMLDivElement | null = document.querySelector('.separator');

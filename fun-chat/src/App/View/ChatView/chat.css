@@ -97,7 +97,7 @@
 
 .chat-header {
     font-size: 26px;
-    max-width: 90%;
+    width: 90%;
     border-bottom: 3px solid #87bc6c;
     padding: 5px;
     text-align: center;

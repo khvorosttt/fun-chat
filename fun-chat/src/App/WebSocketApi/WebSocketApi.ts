@@ -10,6 +10,7 @@ import {
     RequestInfo,
     ResponseInfo,
     ResponseType,
+    CallbackDeleteInfo,
 } from './types';
 
 export default class WebSocketApi {
@@ -37,6 +38,8 @@ export default class WebSocketApi {
 
     changeReadedStatus: CallbackReadedInfo | null;
 
+    deleteMessage: CallbackDeleteInfo | null;
+
     constructor() {
         this.ws = new WebSocket('ws://127.0.0.1:4000');
         this.currentUser = null;
@@ -50,6 +53,7 @@ export default class WebSocketApi {
         this.receivingMessageFromUser = null;
         this.changeDeliveredStatus = null;
         this.changeReadedStatus = null;
+        this.deleteMessage = null;
         this.connectionToServer();
     }
 
@@ -102,6 +106,9 @@ export default class WebSocketApi {
                 break;
             case ResponseType.MSG_READ:
                 this.changeReadedStatus?.callback(response.payload.message);
+                break;
+            case ResponseType.MSG_DELETE:
+                this.deleteMessage?.callback(response.payload.message);
                 break;
             default:
                 break;
@@ -173,5 +180,9 @@ export default class WebSocketApi {
 
     setChangeReadedCallback(callback: CallbackReadedInfo) {
         this.changeReadedStatus = callback;
+    }
+
+    setDeleteCallback(callback: CallbackDeleteInfo) {
+        this.deleteMessage = callback;
     }
 }

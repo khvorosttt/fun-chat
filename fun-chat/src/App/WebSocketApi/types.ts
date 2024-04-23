@@ -8,6 +8,8 @@ export enum RequestType {
     MSG_SEND = 'MSG_SEND',
     MSG_FROM_USER = 'MSG_FROM_USER',
     MSG_READ = 'MSG_READ',
+    MSG_DELETE = 'MSG_DELETE',
+    MSG_EDIT = 'MSG_EDIT',
 }
 
 export enum ResponseType {
@@ -22,6 +24,8 @@ export enum ResponseType {
     MSG_FROM_USER = 'MSG_FROM_USER',
     MSG_DELIVER = 'MSG_DELIVER',
     MSG_READ = 'MSG_READ',
+    MSG_DELETE = 'MSG_DELETE',
+    MSG_EDIT = 'MSG_EDIT',
 }
 
 export interface RequestInfo {
@@ -38,7 +42,8 @@ export interface ResponseInfo {
         UsersResponsePayload &
         MessagesSendResponse &
         MessageSendResponse &
-        MessageResponseStatusPayload;
+        MessageResponseStatusPayload &
+        DeleteResponsePayload;
 }
 
 export interface ErrorInfo {
@@ -137,4 +142,19 @@ export interface CallbackDeliveredInfo {
 
 export interface CallbackReadedInfo {
     callback: (message: MessageResponseReadType) => void;
+}
+
+export interface DeleteResponsePayload {
+    message: DeleteResponseType;
+}
+
+export interface DeleteResponseType {
+    id: string;
+    status: {
+        isDeleted: boolean;
+    };
+}
+
+export interface CallbackDeleteInfo {
+    callback: (message: DeleteResponseType) => void;
 }

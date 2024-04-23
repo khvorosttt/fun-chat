@@ -1,0 +1,84 @@
+.modal-background {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    background: rgb(51%, 61%, 52%, 0.7);
+    opacity: 0;
+    transition: 0.5s;
+}
+
+.modal {
+    display: flex;
+    position: absolute;
+    margin: auto;
+    width: 50%;
+    padding: 30px;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: 40px;
+    background: #fac3d3;
+    color: #6c1f28;
+    opacity: 0;
+    transition: opacity 0.3s;
+    gap: 30px;
+}
+
+.modal-active {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-active .modal,
+.modal-active .modalChooseLevel {
+    opacity: 1;
+    z-index: 10;
+}
+
+.message-change-text {
+    width: 90%;
+    max-height: 100px;
+    resize: none;
+    overflow: hidden;
+    overflow-y: auto;
+    border-radius: 15px;
+    padding: 5px;
+    background-color: #e4f3ec;
+}
+
+.buttons-change-wrapper {
+    display: flex;
+    gap: 15px;
+}
+
+.send-change-button,
+.cancel-change-button,
+.delete-button {
+    font-size: 26px;
+    padding: 7px;
+    background-color: #87bc6c;
+    border: 1px solid #fac3d3;
+    color: #fac3d3;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    .buttons-change-wrapper {
+        gap: 10px;
+    }
+
+    .send-change-button,
+    .cancel-change-button,
+    .delete-button {
+        font-size: 16px;
+        padding: 4px;
+    }
+}
