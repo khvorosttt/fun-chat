@@ -57,6 +57,11 @@ export default class ModalView extends View {
         this.container?.append(modal);
     }
 
+    resetMessageData() {
+        this.textContainer.value = '';
+        this.cancelLogic();
+    }
+
     setMessageData(id: string, text: string | null) {
         this.id = id;
         this.text = text;

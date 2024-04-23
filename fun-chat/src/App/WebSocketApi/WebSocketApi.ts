@@ -20,6 +20,10 @@ export default class WebSocketApi {
 
     currentUser: UserType | null;
 
+    openCallback: CallbackInfo | null;
+
+    closeCallback: CallbackInfo | null;
+
     loginErrorCallback: CallbackErrorInfo | null;
 
     loginCallback: CallbackInfo | null;
@@ -47,6 +51,8 @@ export default class WebSocketApi {
     constructor() {
         this.ws = new WebSocket('ws://127.0.0.1:4000');
         this.currentUser = null;
+        this.openCallback = null;
+        this.closeCallback = null;
         this.loginErrorCallback = null;
         this.loginCallback = null;
         this.logoutCallback = null;
@@ -65,6 +71,7 @@ export default class WebSocketApi {
     connectionToServer() {
         this.ws.onopen = () => {
             console.log('Connection to server established');
+            this.openCallback?.callback();
         };
         this.ws.addEventListener('message', (event) => {
             const response: ResponseInfo = JSON.parse(event.data);
@@ -72,6 +79,7 @@ export default class WebSocketApi {
         });
         this.ws.onclose = () => {
             console.log('Connection to the server was interrupted');
+            this.closeCallback?.callback();
             this.reconnection();
         };
     }
@@ -163,6 +171,14 @@ export default class WebSocketApi {
         } else {
             setTimeout(() => this.waitingForConnection(callback, resendInterval), resendInterval);
         }
+    }
+
+    setOpenCallback(callback: CallbackInfo) {
+        this.openCallback = callback;
+    }
+
+    setCloseCallback(callback: CallbackInfo) {
+        this.closeCallback = callback;
     }
 
     setLoginErrorCallback(callback: CallbackErrorInfo) {

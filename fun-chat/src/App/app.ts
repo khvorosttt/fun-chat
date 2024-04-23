@@ -12,6 +12,7 @@ import ChatView from './View/ChatView/ChatView';
 import { RequestType, RequestInfo } from './WebSocketApi/types';
 import AboutView from './View/AboutView/AboutView';
 import ModalView from './View/ModalView/ModalView';
+import ModalConnectView from './View/ModelConnectView/ModalConnectView';
 
 export default class App {
     container: HTMLElement;
@@ -26,6 +27,8 @@ export default class App {
 
     modal: ModalView;
 
+    modalConnection: ModalConnectView;
+
     ws: WebSocketApi;
 
     constructor() {
@@ -35,6 +38,7 @@ export default class App {
         this.footer = new FooterView();
         this.ws = new WebSocketApi();
         this.modal = new ModalView(this.ws);
+        this.modalConnection = new ModalConnectView(this.ws, this.router, this.modal);
         this.header = new HeaderView(this.router, this.ws);
         this.contentContainer = new Component('div', '', '', ['content-container']).getContainer<HTMLDivElement>();
         this.initApp();
@@ -47,7 +51,15 @@ export default class App {
         isNull(footerContainer);
         const modalContainer: HTMLDivElement | null = this.modal.getContainer();
         isNull(modalContainer);
-        this.container.append(headerContainer, this.contentContainer, footerContainer, modalContainer);
+        const modalConnectContainer: HTMLDivElement | null = this.modalConnection.getContainer();
+        isNull(modalConnectContainer);
+        this.container.append(
+            headerContainer,
+            this.contentContainer,
+            footerContainer,
+            modalContainer,
+            modalConnectContainer
+        );
         this.createView();
     }
 
