@@ -10,9 +10,12 @@ import './header.css';
 export default class HeaderView extends View {
     currentUser: HTMLDivElement | null;
 
+    logoutButton: HTMLButtonElement | null;
+
     constructor(router: Router, ws: WebSocketApi) {
         super(['header']);
         this.currentUser = null;
+        this.logoutButton = null;
         this.initHeader(router, ws);
     }
 
@@ -20,16 +23,15 @@ export default class HeaderView extends View {
         const nameApp: HTMLHeadingElement = new Component('h1', '', 'Fun Chat', [
             'name-app',
         ]).getContainer<HTMLHeadingElement>();
-        const logoutButton: HTMLButtonElement = new Component('button', '', 'Logout', [
-            'logout-button',
-        ]).getContainer<HTMLButtonElement>();
-        logoutButton.addEventListener('click', () => HeaderView.logoutUser(router, ws));
+        this.logoutButton = new Component('button', '', 'Logout', ['logout-button']).getContainer<HTMLButtonElement>();
+        isNull(this.logoutButton);
+        this.logoutButton.addEventListener('click', () => this.logoutUser(router, ws));
         this.currentUser = new Component('div', '', '', ['current-user-name']).getContainer<HTMLDivElement>();
         this.setNameUser();
-        this.container?.append(nameApp, this.currentUser, logoutButton);
+        this.container?.append(nameApp, this.currentUser, this.logoutButton);
     }
 
-    static logoutUser(router: Router, ws: WebSocketApi) {
+    logoutUser(router: Router, ws: WebSocketApi) {
         const sessionInfo: string | null = sessionStorage.getItem('user');
         isNull(sessionInfo);
         const request: RequestInfo = {
@@ -42,6 +44,7 @@ export default class HeaderView extends View {
         ws.sendMessageToServer(request);
         ws.setLogoutCallback({
             callback: () => {
+                this.logoutButton?.classList.remove('show');
                 sessionStorage.clear();
                 router.navigate('login');
             },
@@ -58,5 +61,9 @@ export default class HeaderView extends View {
         }
         isNull(this.currentUser);
         this.currentUser.textContent = user ? user.login : '';
+    }
+
+    showLogoutButton() {
+        this.logoutButton?.classList.add('show');
     }
 }

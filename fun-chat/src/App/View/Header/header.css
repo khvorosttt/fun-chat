@@ -25,6 +25,7 @@
     color: #fac3d3;
     border-radius: 10px;
     cursor: pointer;
+    display: none;
 }
 
 .logout-button:disabled,
@@ -37,4 +38,8 @@
     background-color: #fac3d3;
     border: 1px solid #87bc6c;
     color: #87bc6c;
+}
+
+.show {
+    display: block;
 }

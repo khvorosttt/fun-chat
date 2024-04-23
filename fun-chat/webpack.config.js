@@ -42,6 +42,12 @@ module.exports = {
         port: 4000,
         historyApiFallback: true,
     },
-    plugins: [new CleanWebpackPlugin(), new HtmlWebpackPlugin()],
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            title: 'Fun Chat',
+            favicon: path.join(__dirname, 'src', 'favicon.ico'),
+        }),
+    ],
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 };

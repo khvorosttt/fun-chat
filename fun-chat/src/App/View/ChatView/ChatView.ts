@@ -39,6 +39,7 @@ export default class ChatView extends View {
         const user: UserType = JSON.parse(sessionInfo);
         this.currentUser = user.login;
         header.setNameUser();
+        header.showLogoutButton();
         this.setUsersContainer();
         this.container?.append(this.dialogContainer);
     }
