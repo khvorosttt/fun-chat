@@ -422,7 +422,7 @@ export default class ChatView extends View {
     sendMessageToCompanion(event: Event, messageText: HTMLTextAreaElement, messagesContainer: HTMLDivElement) {
         event.preventDefault();
         const copyMessageText: HTMLTextAreaElement = messageText;
-        if (this.currentCompanion !== null && messageText.value !== '') {
+        if (this.currentCompanion !== null && messageText.value.trim() !== '') {
             const message: RequestInfo = {
                 id: '',
                 type: RequestType.MSG_SEND,
